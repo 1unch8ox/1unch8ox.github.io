@@ -5,6 +5,7 @@ https://coolors.co/palette/3c3744-090c9b-3d52d5-b4c5e4-d8e2eb-eaf1ee-fbfff1
  --bg: #fbfff1;
  --accent-bg: #eaf1ee;
  --text: #3c3744;
+ --button: #3D52D5;
  --border: #3C3744;
  --code: #090C9B;
 }
@@ -25,8 +26,10 @@ header {
  padding: 0.5rem 2rem .5rem;
  grid-column: 1/-1;
 }
-body > header input {
- margin: 0.5rem auto
+body > header a {
+ margin: 0.5rem auto;
+ text-decoration: none;
+ color: var(--button);
 }
 body > header h1 {
  max-width: 1200px;
@@ -47,9 +50,9 @@ pre {
  border: 1px solid var(--border);
  color: var(--code);
 }
-a, a : visited{
+a, a : visited {
  color:var(--accent)
 }
-a: hover{
+a: hover {
  text-decoration:none
 }
