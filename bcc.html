@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="stylesheet" href="css/main.css">
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css" integrity="sha384-Xi8rHCmBmhbuyyhbI88391ZKP2dmfnOl4rT9ZfRI7mLTdk1wblIUnrIq35nqwEvC" crossorigin="anonymous">
+ <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js" integrity="sha384-X/XCfMm41VSsqRNQgDerQczD69XqmjOOOwYQvr/uuC+j4OPoNhVgjdGFwhvN02Ja" crossorigin="anonymous"></script>
+ <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js" integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR" crossorigin="anonymous"></script>
+ <script>
+  document.addEventListener("DOMContentLoaded", function() {
+   renderMathInElement(document.body, {
+    delimiters: [
+     {left: '$$', right: '$$', display: true},
+     {left: '$', right: '$', display: false},
+     {left: '\\(', right: '\\)', display: false},
+     {left: '\\[', right: '\\]', display: true}
+    ],
+    throwOnError : false
+   });
+  });
+ </script>
+</head>
+<body>
+ <header>
+  <form>
+   <input type="button" value="Back to home" onclick="index.html">
+  </form>
+  <h1>Biconnected Components</h1>
+  <p>Two vertices are in a biconnected component if and only if they are reachable to each other after removing any vertex. For an edge biconnected component, removing any edge doesn't affect the connectivity. </p>
+ </header>
+ <main>
+  <p>
+   Biconnected components can be found offline using Tarjan's algorithm in $\mathcal O(N+M)$.
+   For now, we will talk about how to maintain edge biconnected components online in $\mathcal O(N\log N+M)$. Although the following presented algorithm has an extra $\log$ factor, it performs quite fast in practice.<br>
+  </p>
+  <p>
+   First, each vertex will belong in exactly one biconnected component. Then, compress each vertex into its component. Now, there must not exist a cycle; otherwise, the biconnected components contained in the cycle would be merged into a single biconnected component.
+  </p>
+  <p>
+   Let's say we add an edge $(u, v)$. We have $3$ cases:
+   <ol>
+    <li>
+     Vertices $u$ and $v$ are not connected.
+    </li>
+    <li>
+     Vertices $u$ and $v$ are in the same biconnected comonent.
+    </li>
+    <li>
+     Connecting vertices $u$ and $v$ creates a cycle on the compressed tree.
+    </li>
+   </ol>
+   For case 1, $(u, v)$ is a bridge, so the components (not biconnected components) $u$ and $v$ will be merged into one. This can be done with a classic Disjoint Union Set.
+   For case 2, adding the edge does not change the biconnectivity of the graph, so nothing needs to be done.
+  </p>
+  <p>
+   Case 3 is a bit trickier. As mentioned before, all biconnected components on cycles should be compressed into a single one. Therefore, all the biconnected components on the path from $u$ to $v$ on the tree should be merged into one. To find these components, root the tree at a random biconnected components and maintain the parents of the others. Now, we can brute-forcely walk up the tree from both $u$ and $v$ until we reach a common node. Afterwards, you can find the least common ancestor of $u$ and $v$ so the components on the cycle are found. In total, at most $N-1$ biconnected components are merged, so the overall time complexity amortizes to $\mathcal O(N)$.
+  </p>
+  <p>
+   Lastly, we have to deal with case 1, since we're maintaining the parents of each biconnected component. Since the root of the trees can be arbitrary chosen, we can make a DFS on the smaller tree, updating the parents of each vertex. Since we're spending time linear to the smaller component, so the time complexity of this portion amortizes to $\mathcal O(N\log N)$.
+  </p>
+  <pre>namespace ebcc {
+ vector<int> g[N]; int e[N], f[N], p[N], t[N], z;
+ void bld(int n) { z = 0; for (int i = 0; i < n; i++) e[i] = -1, f[i] = -1, p[i] = -1, g[i].clear(); }
+ int fc(int i) { return e[i] < 0 ? i : e[i] = fc(e[i]); }
+ int fbc(int i) { return f[i] < 0 ? i : f[i] = fbc(f[i]); }
+ int fp(int i) { return i == -1 || p[i] == -1 ? -1 : (fbc(i) == fbc(p[i]) ? p[i] = fp(p[i]) : p[i] = fbc(p[i])); }
+ void fbc(int i, int j) { i = fbc(i), j = fbc(j); if (f[i] > f[j]) swap(i, j); f[i] += f[j], f[j] = i; }
+ void upd(int q, int i) { p[i] = q; for (int j : g[i]) if (q != j) upd(i, j); }
+ void link(int i, int j) { int ci = fc(i), cj = fc(j); if (ci == cj) { int u = fbc(i), v = fbc(j), k = -1; ++z; if (u == v) return; while (1) {
+  if (u != -1) { if (t[u] == z) { k = u; break; } t[u] = z, u = fp(u); } if (v != -1) { if (t[v] == z) { k = v; break; } t[v] = z, v = fp(v); }
+  } while (fbc(i) != fbc(k)) fbc(i, fp(i)); while (fbc(j) != fbc(k)) fbc(j, fp(j));
+  } else { if (e[ci] > e[cj]) swap(i, j), swap(ci, cj); g[i].push_back(j), g[j].push_back(i), upd(i, j), e[ci] += e[cj], e[cj] = ci; }
+ }
+ bool bridge(int i, int j) { return fc(i) == fc(j) && (fp(fbc(i)) == fbc(j) || fp(fbc(j)) == fbc(i)); }
+}</pre>
+</body>
+</html>
