@@ -5,7 +5,6 @@ https://coolors.co/palette/3c3744-090c9b-3d52d5-b4c5e4-d8e2eb-eaf1ee-fbfff1
  --bg: #fbfff1;
  --accent-bg: #eaf1ee;
  --text: #3c3744;
- --button: #3D52D5;
  --border: #3C3744;
  --code: #090C9B;
 }
@@ -28,8 +27,6 @@ header {
 }
 body > header a {
  margin: 0.5rem auto;
- text-decoration: none;
- color: var(--button);
 }
 body > header h1 {
  max-width: 1200px;
