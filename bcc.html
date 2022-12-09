@@ -4,6 +4,7 @@
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <link rel="stylesheet" href="css/main.css">
+ <title>Biconnected Components</title>
  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css" integrity="sha384-Xi8rHCmBmhbuyyhbI88391ZKP2dmfnOl4rT9ZfRI7mLTdk1wblIUnrIq35nqwEvC" crossorigin="anonymous">
  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js" integrity="sha384-X/XCfMm41VSsqRNQgDerQczD69XqmjOOOwYQvr/uuC+j4OPoNhVgjdGFwhvN02Ja" crossorigin="anonymous"></script>
  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js" integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR" crossorigin="anonymous"></script>
@@ -59,8 +60,8 @@
   <p>
    Lastly, we have to deal with case 1, since we're maintaining the parents of each biconnected component. Since the root of the trees can be arbitrary chosen, we can make a DFS on the smaller tree, updating the parents of each vertex. Since we're spending time linear to the smaller component, so the time complexity of this portion amortizes to $\mathcal O(N\log N)$.
   </p>
-  <pre>namespace ebcc {
- vector<int> g[N]; int e[N], f[N], p[N], t[N], z;
+  <pre><code>namespace ebcc {
+ vector&lt;int&gt; g[N]; int e[N], f[N], p[N], t[N], z;
  void bld(int n) { z = 0; for (int i = 0; i < n; i++) e[i] = -1, f[i] = -1, p[i] = -1, g[i].clear(); }
  int fc(int i) { return e[i] < 0 ? i : e[i] = fc(e[i]); }
  int fbc(int i) { return f[i] < 0 ? i : f[i] = fbc(f[i]); }
@@ -73,6 +74,6 @@
   } else { if (e[ci] > e[cj]) swap(i, j), swap(ci, cj); g[i].push_back(j), g[j].push_back(i), upd(i, j), e[ci] += e[cj], e[cj] = ci; }
  }
  bool bridge(int i, int j) { return fc(i) == fc(j) && (fp(fbc(i)) == fbc(j) || fp(fbc(j)) == fbc(i)); }
-}</pre>
+}</code></pre>
 </body>
 </html>

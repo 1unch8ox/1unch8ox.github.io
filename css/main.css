@@ -43,9 +43,13 @@ pre {
  padding: 1rem 1.4rem;
  max-width: 100%;
  overflow: auto;
- display: inline-block;
  border: 1px solid var(--border);
+}
+pre code{
  color: var(--code);
+ background: 0 0;
+ margin: 0;
+ padding: 0;
 }
 a, a : visited {
  color:var(--accent)
